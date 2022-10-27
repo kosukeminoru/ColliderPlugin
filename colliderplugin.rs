@@ -77,9 +77,9 @@ pub fn mesh_collider_create(
     mut run: ResMut<Run>,
     objects: Query<&AddCollider>,
 ) {
-    for tagged_entities in objects.iter() {
-        let collider_info = tagged_entities.0.clone();
-        if !run.0 .0 {
+    if !run.0 .0 {
+        for tagged_entities in objects.iter() {
+            let collider_info = tagged_entities.0.clone();
             match ass_world.get_mut(&collider_info.1) {
                 Some(world) => {
                     let mut query_one = world.world.query::<(Entity, &Handle<Mesh>)>();
@@ -87,13 +87,13 @@ pub fn mesh_collider_create(
                         let parent = commands.entity(entity).id();
                         let mut collider = Collider::default();
                         if collider_info.0 {
-                            let collider = Collider::from_bevy_mesh(
+                            collider = Collider::from_bevy_mesh(
                                 &meshes.get(&mesh).unwrap().extract_asset(),
                                 &ComputedColliderShape::TriMesh,
                             )
                             .unwrap();
                         } else {
-                            let collider = Collider::from_bevy_mesh(
+                            collider = Collider::from_bevy_mesh(
                                 &meshes.get(&mesh).unwrap().extract_asset(),
                                 &ConvexDecomposition(VHACDParameters::default()),
                             )
@@ -101,13 +101,7 @@ pub fn mesh_collider_create(
                         }
                         let child_mesh = commands
                             .spawn()
-                            .insert(
-                                Collider::from_bevy_mesh(
-                                    &meshes.get(&mesh).unwrap().extract_asset(),
-                                    &ComputedColliderShape::TriMesh,
-                                )
-                                .unwrap(),
-                            )
+                            .insert(collider)
                             .insert(Friction::new(1000.0))
                             .insert(BetterParent(parent))
                             .insert_bundle(TransformBundle::default())

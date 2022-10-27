@@ -78,6 +78,9 @@ pub fn mesh_collider_transform(
                         }
                         // println!("{:?}", run.0 .1);
                         run.0 .1 = run.0 .1 - 1;
+                        if run.0 .1 == 0 {
+                            run.0 .2 = 0;
+                        }
                         commands.entity(ent).remove::<ConsumedCollider>();
                     }
 
@@ -101,7 +104,6 @@ pub fn mesh_collider_create(
     if objects.iter().len() > 0 {
         run.0 .1 = objects.iter().len();
         run.0 .0 = false;
-        run.0 .2 = 0;
     }
     if !run.0 .0 {
         run.0 .1 = objects.iter().len();
